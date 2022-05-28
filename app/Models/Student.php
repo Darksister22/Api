@@ -24,4 +24,14 @@ class Student extends Model
         'avg10',
         'note',
     ];
+
+    public function courseCarry()
+    {
+        return $this->hasOne(Course::class, 'carries');
+    }
+
+    public function degrees()
+    {
+        return $this->hasMany(Degree::class);
+    }
 }

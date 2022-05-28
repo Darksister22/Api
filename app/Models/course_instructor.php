@@ -12,12 +12,15 @@ class course_instructor extends Model
         'course_id',
         'instructor_id',
     ];
+
+    protected $table = 'course_instructor';
+
     public function instructors()
     {
         return $this->belongsToMany(Instructor::class);
     }
 
-        public function courses()
+    public function courses()
     {
         return $this->belongsToMany(Course::class);
     }

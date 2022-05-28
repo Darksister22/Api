@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Carry;
 use App\Models\Course;
 use App\Models\Semester;
 use App\Models\Student;
@@ -15,41 +16,41 @@ class CourseController extends Controller
         $this->middleware('auth:sanctum')
             ->only(['destroy', 'create', 'update']);
     }
-    public function showAll(){
+    public function showAll()
+    {
         $semester = Semester::where('isEnded', '=', false)->first();
         $id = $semester->id;
-        $courses = Course::select('*')->where ('semester_id', "=" ,$id)->get();
-        $newlist=[];
-        foreach ($courses as $course) { 
-        $studjrkne = Student::select('*')->where('level','=',$course->level)->where('year','=',$course->year)->get();
-        
-        $course['students']=$studjrkne;
-        array_push($newlist,$course);
-        // dd( $course);
-
+        $courses = Course::with('studentsCarry')->select('*')->where('semester_id', "=", $id)->get();
+        $newList = [];
+        foreach ($courses as $course) {
+            $students = Student::select('*')->where('level', '=', $course->level)
+                ->where('year', '=', $course->year)
+                ->get();
+            $course['students'] = $students;
+            array_push($newList, $course);
         }
-        return $newlist;
-        
+        return $newList;
     }
-    public function create(Request $request){
+    public function create(Request $request)
+    {
         $request->validate([
             'name_ar' => 'required',
             'name_en' => 'required',
             'level' => 'required',
-            'code'=> 'required',
-            'unit'=> 'required',
-            'year'=>'required'
+            'code' => 'required',
+            'unit' => 'required',
+            'year' => 'required'
         ]);
         $semester = Semester::where('isEnded', '=', false)->first();
         Course::create([
             'name_ar' => $request->name_ar,
             'name_en' =>  $request->name_en,
             'level' => $request->level,
-            'code'=> $request->code,
-            'semester_id'=>$semester->id,
-            'unit'=> $request->unit,
-            'year'=>$request->year,
-        ]); 
+            'code' => $request->code,
+            'semester_id' => $semester->id,
+            'unit' => $request->unit,
+            'year' => $request->year,
+        ]);
     }
     public function destroy($id)
     {

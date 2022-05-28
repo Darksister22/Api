@@ -16,6 +16,7 @@ class CreateCoursesTable extends Migration
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('semester_id');
+            
             $table->enum('level',['bachaelor','master','pHD']);
             $table->enum('year',['first','second','third','fourth','fifth','sixth','seventh','eigth','ninth','tenth']);
             $table->string('name_ar')->nullable();

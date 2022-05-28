@@ -5,21 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\course_instructor;
 use App\Models\Instructor;
+use App\Models\Semester;
 use Illuminate\Http\Request;
 
 class InstructorController extends Controller
 {
-    
+
     public function __construct()
     {
         $this->middleware('auth:sanctum')
             ->only(['destroy', 'create', 'update']);
     }
-    public function showAll(){
+    public function showAll()
+    {
         $instructor = Instructor::select('*')->get();
         return $instructor;
     }
-    public function create(Request $request){
+    public function create(Request $request)
+    {
         $request->validate([
             'name_ar' => 'required',
             'name_en' => 'required',
@@ -27,23 +30,34 @@ class InstructorController extends Controller
         Instructor::create([
             'name_ar' => $request->name_ar,
             'name_en' =>  $request->name_en,
-        ]); 
+        ]);
     }
 
-    public function setcourse(Request $request){
+    public function setcourse(Request $request)
+    {
 
         // course_instructor::create([
-        //     'course_id'=>$request->course_id,
-        //     'instructors_id'=>$request->instructor_id,
-        // ])  ;
+        //     'course_id' => $request->course_id,
+        //     'instructor_id' => $request->instructor_id,
+        // ]);
         $ins = Instructor::with("courses")->select('*')->get();
-         return $ins;
+        $cou = Course::with("Instructors")->select('*')->get();
+        $semester = Semester::with(['courses' => function ($query) {
+            $query->with('Instructors');
+        }])->select('*')->where('isEnded', '=', false)->get()->first();
+        return [
+            "course-with-instructors" => $cou,
+            //"instructor-with-courses" => $ins,
+            //semester with courses and their instructors
+            "semester" => $semester,
+        ];
+
+
+        // return course_instructor::select('*')->get();
     }
     public function destroy($id)
     {
         Instructor::destroy($id);
         return response('تم حذف التدريسي بنجاح', 200);
     }
-
-
 }

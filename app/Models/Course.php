@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use App\Models\Semester;
 use App\Models\Instructor;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -8,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'semester_id',
         'level',
@@ -20,10 +22,16 @@ class Course extends Model
     ];
     public function instructors()
     {
-        return $this->hasMany(Instructor::class);
+        return $this->belongsToMany(Instructor::class, 'course_instructor');
     }
+
+    public function studentsCarry()
+    {
+        return $this->belongsToMany(Student::class, 'carries');
+    }
+
     public function semester()
     {
-        return $this->belongsTo(Semester::class);
+        return $this->belongsToMany(Semester::class);
     }
 }

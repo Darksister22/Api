@@ -15,9 +15,10 @@ class CreateCarriesTable extends Migration
     {
         Schema::create('carries', function (Blueprint $table) {
             $table->id();
-            $table->enum('attend_carry',['attend','carry']);
+            $table->enum('attend_carry', ['attend', 'carry']);
             $table->unsignedBigInteger('student_id');
             $table->unsignedBigInteger('course_id');
+            $table->timestamps();
         });
     }
 
