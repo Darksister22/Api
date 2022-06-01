@@ -21,6 +21,7 @@ class InstructorController extends Controller
         $instructor = Instructor::select('*')->get();
         return $instructor;
     }
+
     public function create(Request $request)
     {
         $request->validate([
@@ -32,28 +33,17 @@ class InstructorController extends Controller
             'name_en' =>  $request->name_en,
         ]);
     }
-
-    public function setcourse(Request $request)
-    {
-
-        // course_instructor::create([
-        //     'course_id' => $request->course_id,
-        //     'instructor_id' => $request->instructor_id,
-        // ]);
-        $ins = Instructor::with("courses")->select('*')->get();
-        $cou = Course::with("Instructors")->select('*')->get();
-        $semester = Semester::with(['courses' => function ($query) {
-            $query->with('Instructors');
-        }])->select('*')->where('isEnded', '=', false)->get()->first();
-        return [
-            "course-with-instructors" => $cou,
-            //"instructor-with-courses" => $ins,
-            //semester with courses and their instructors
-            "semester" => $semester,
-        ];
-
-
-        // return course_instructor::select('*')->get();
+    public function update(Request $request){
+        $request->validate([
+            'id' => 'required',
+            'name_ar' => 'required',
+            'name_en' => 'required',
+        ]);
+        $instructor = Instructor::select('*')->where('id','=',"$request->id")->first();
+        $instructor->name_ar = $request->name_ar;
+        $instructor->name_en = $request->name_en;
+        $instructor-> save();
+    
     }
     public function destroy($id)
     {

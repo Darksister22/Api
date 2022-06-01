@@ -9,6 +9,20 @@ use App\Models\Student;
 
 class Degree extends Model
 {
+    protected $fillable = [
+        'student_id',
+        'course_id',
+        'fourty',
+        'sixty1',
+        'sixty2',
+        'sixty3',
+        'final1',
+        'final2',
+        'final3',
+        'approx',
+        'avg',
+        'sts'
+    ];
     public function courses()
     {
         return $this->belongsTo(Course::class);

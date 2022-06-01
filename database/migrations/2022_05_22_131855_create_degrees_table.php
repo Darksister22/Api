@@ -18,11 +18,12 @@ class CreateDegreesTable extends Migration
             $table->unsignedBigInteger('student_id');
             $table->unsignedBigInteger('course_id');
             $table->decimal('fourty')->nullable();
-            $table->decimal('sixty')->nullable();
+            $table->decimal('sixty1')->nullable();
+            $table->decimal('sixty2')->nullable();
+            $table->decimal('sixty3')->nullable();
             $table->decimal('final1')->nullable();
             $table->decimal('final2')->nullable();
             $table->decimal('final3')->nullable();
-            
             $table->enum('approx',['A','B','C','D','E','F'])->nullable();
             $table->decimal('avg')->nullable();
             $table->enum('sts',['pass','fail','carry'])->nullable();

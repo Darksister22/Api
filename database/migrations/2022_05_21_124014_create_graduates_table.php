@@ -29,7 +29,7 @@ class CreateGraduatesTable extends Migration
             $table->decimal('avg10')->nullable();
             $table->enum('level',['bachaelor','master','pHD']);
             $table->enum('year',['first','second','third','fourth','fifth','sixth','seventh','eigth','ninth','tenth']);
-            $table->decimal('summer_deg');
+            $table->decimal('summer_deg')->nullable();
             $table->string('note')->nullable();
             $table->timestamps();
         });

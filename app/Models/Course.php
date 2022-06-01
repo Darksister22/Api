@@ -12,6 +12,7 @@ class Course extends Model
     use HasFactory;
     protected $fillable = [
         'semester_id',
+        'instructor_id',
         'level',
         'year',
         'name_ar',
@@ -20,11 +21,10 @@ class Course extends Model
         'success',
         'unit'
     ];
-    public function instructors()
+    public function instructor()
     {
-        return $this->belongsToMany(Instructor::class, 'course_instructor');
+        return $this->belongsTo(Instructor::class);
     }
-
     public function studentsCarry()
     {
         return $this->belongsToMany(Student::class, 'carries');

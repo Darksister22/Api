@@ -16,6 +16,6 @@ class Instructor extends Model
     ];
     public function courses()
     {
-        return $this->belongsToMany(Course::class, 'course_instructor');
+        return $this->hasMany(Course::class);
     }
 }

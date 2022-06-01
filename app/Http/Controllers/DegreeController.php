@@ -7,34 +7,25 @@ use App\Models\Degree;
 use App\Models\Degreeh;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class DegreeController extends Controller
 {
     public function createhelp(Request $request)
-    {
-        $request->validate([
-            'source' => 'required',
-            'amt' => 'required',
-        ]);
-        Degreeh::create([
-            'source' => $request->source,
-            'amt' =>  $request->amt,
-        ]);
+    {        $request->validate([
+        'source' => 'required',
+        'amt' => 'required',
+    ]);
+    if (!Gate::allows('is-super')) {  
+        return response('انت غير مخول', 403);
     }
-    public function create(Request $request)
-    {
-        $id = $request->student_id;
-        $crs = $request->course_id;
-        $category = Student::find([$id]);
-        $crs = Course::find([$crs]);
-        $product = new Degree();
-
-        $product = $id->with('students')->save($category);
-        $product = $crs->courses()->save($crs);
-
-        $product->save();
+    Degreeh::create([
+        'source' => $request->source,
+        'amt' =>  $request->amt,
+    ]); 
     }
 
+    
     public function getStudentDegrees(Request $request)
     {
         $request->validate([
@@ -55,5 +46,31 @@ class DegreeController extends Controller
             'd' => $d,
 
         ];
+    }
+    public function createStudentDegrees(Request $request)
+    {
+        $request->validate([
+            'student_id' => 'required',
+            'course_id' => 'required',
+        ]);
+        $course = Course::select('*')->where('id','=',"$request->course_id")->first();
+        $student = Student::select('*')->where('id','=',"$request->student_id")->first();
+        
+        
+            $results=Degree::where('student_id',"=","$student->id")->where('course_id','=',"$course->id")->first();
+            //code...
+            if ($results == null ) {
+                
+                Degree::create([
+                    'student_id'=>$student->id,
+                    'course_id'=>$course->id
+                ]);
+                return($results);
+            }
+            else return ($results);
+
+        
+
+      
     }
 }

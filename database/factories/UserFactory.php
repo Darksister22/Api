@@ -17,6 +17,7 @@ class UserFactory extends Factory
         return [
             'name' => 'fatema',
             'email' => 'fatema@f.com',
+            'role'=>'superadmin',
             'email_verified_at' => now(),
             'password' => Hash::make('123456789'), // password
             'remember_token' => Str::random(10),

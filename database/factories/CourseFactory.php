@@ -15,6 +15,7 @@ class CourseFactory extends Factory
     {
         return [
             "semester_id" => 1,
+            "instructor_id"=>1,
             "level" => "master",
             "year" => "first",
             "name_ar" => "fatma",

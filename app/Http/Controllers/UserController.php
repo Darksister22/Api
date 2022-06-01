@@ -41,6 +41,7 @@ class UserController extends Controller
 
         return response()->json([
             'user' => $user,
+            'role'=>$user->role,
             'access_token' => $token,
             'token_type' => 'Bearer'
         ]);
@@ -77,23 +78,26 @@ class UserController extends Controller
             'token_type' => 'Bearer'
         ]);
     }
-    public function update(Request $request)
-    {
-        if (!Gate::allows('is-super')) {
-            
-            return response('انت غير مخول', 403);
+    public function update(Request $request){
+        $request->validate([
+            'id'=>'required',
+            'email' => 'required|email',
+            'name' => 'required',
+            'role' => 'required'
+        ]);
+        $users = User::where('email', '=', "$request->email")->first();
+        if ($users !== null && $users->email!=$request->email) {
+            return response('البريد الالكتروني مأخوذ سابقا', 409);
         }
-        $id = $request->id; 
-        User::whereId($id)->update($request);
-        return response('تم التحديث', 200);
-
+        $users = User::select('*')->where('id','=',"$request->id")->first();
+        $users->name = $request->name;
+        $users->email = $request->email;
+        $users->role = $request->role;
+        $users-> save();
+    
     }
-
     public function destroy($id)
     {
-        if (!Gate::allows('is-super')) {
-            return response('انت غير مخول', 403);
-        }
         User::destroy($id);
         return response('تم حذف المستخدم بنجاح', 200);
     }

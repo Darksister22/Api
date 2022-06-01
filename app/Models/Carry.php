@@ -9,6 +9,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Carry extends Model
 {
+    protected $fillable = [
+        'course_id',
+        'student_id',
+        'attend_carry'
+    ];
     public function courses()
     {
         return $this->hasMany(Course::class);

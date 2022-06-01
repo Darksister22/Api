@@ -16,11 +16,11 @@ class CreateCoursesTable extends Migration
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('semester_id');
-            
+            $table->unsignedBigInteger('instructor_id');
             $table->enum('level',['bachaelor','master','pHD']);
             $table->enum('year',['first','second','third','fourth','fifth','sixth','seventh','eigth','ninth','tenth']);
             $table->string('name_ar')->nullable();
-            $table->string('name_en');
+            $table->string('name_en')->unique();
             $table->string('code');
             $table->double('success')->default(50);
             $table->double('unit');

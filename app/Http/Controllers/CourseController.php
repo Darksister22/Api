@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Carry;
 use App\Models\Course;
+use App\Models\Instructor;
 use App\Models\Semester;
+use App\Models\course_instructor;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use PHPUnit\Framework\Constraint\Count;
@@ -20,7 +22,8 @@ class CourseController extends Controller
     {
         $semester = Semester::where('isEnded', '=', false)->first();
         $id = $semester->id;
-        $courses = Course::with('studentsCarry')->select('*')->where('semester_id', "=", $id)->get();
+       // $courses = Course::with('studentsCarry')->select('*')->where('semester_id', "=", $id)->get();
+        $courses = Course::with('instructor')->with('studentsCarry')->select('*')->where('semester_id', "=", $id)->get();
         $newList = [];
         foreach ($courses as $course) {
             $students = Student::select('*')->where('level', '=', $course->level)
@@ -31,6 +34,15 @@ class CourseController extends Controller
         }
         return $newList;
     }
+    public function showLevel(Request $request)
+    {
+        $request->validate(['level' => 'required']);
+        $semester = Semester::where('isEnded', '=', false)->first();
+        $id = $semester->id;
+        $courses = Course::select('*')->where('semester_id', "=", $id)->where('level', "=", "$request->level")->get();
+
+        return response(['courses'=>$courses],200) ;
+    }
     public function create(Request $request)
     {
         $request->validate([
@@ -39,18 +51,59 @@ class CourseController extends Controller
             'level' => 'required',
             'code' => 'required',
             'unit' => 'required',
-            'year' => 'required'
+            'year' => 'required',
+            'ins_name'=>'required',
+            'success'=>'required'
         ]);
+        $course = Course::where('name_en', '=', "$request->name_en")->first();
+        if ($course !== null && $course->name_en!=$request->name_en) {
+            return response('المادة موجودة مسبقاً', 409);
+        }
         $semester = Semester::where('isEnded', '=', false)->first();
+        $instructor = Instructor::where('name_ar', '=', "$request->ins_name")->first();
+        if($instructor==null){
+            return response("لا يوجد تدريسي بهذا الاسم, الرجاء التأكد",409);
+        }
+
         Course::create([
             'name_ar' => $request->name_ar,
             'name_en' =>  $request->name_en,
+            'instructor_id'=>$instructor->id,
             'level' => $request->level,
             'code' => $request->code,
             'semester_id' => $semester->id,
             'unit' => $request->unit,
             'year' => $request->year,
+            'success'=>$request->success
         ]);
+        
+    }
+    public function update(Request $request){
+        $request->validate([
+            'name_ar' => 'required',
+            'name_en' => 'required',
+            'level' => 'required',
+            'code' => 'required',
+            'unit' => 'required',
+            'year' => 'required',
+            'ins_name'=>'required',
+            'success'=>'required'
+        ]);
+        $instructor = Instructor::where('name_ar', '=', "$request->ins_name")->first();
+        if($instructor==null){
+            return response("لا يوجد تدريسي بهذا الاسم, الرجاء التأكد",409);
+        }
+        $course = Course::select('*')->where('id','=',"$request->id")->first();
+        $course->name_ar = $request->name_ar;
+        $course->name_en = $request->name_en;
+        $course->level = $request->level;
+        $course->year = $request->year;
+        $course->code = $request->code;
+        $course->unit = $request->unit;
+        $course->instructor_id = $instructor->unit;
+        $course->success = $request->success;
+        $course-> save();
+    
     }
     public function destroy($id)
     {
@@ -58,3 +111,5 @@ class CourseController extends Controller
         return response('تم حذف الكورس بنجاح', 200);
     }
 }
+
+
