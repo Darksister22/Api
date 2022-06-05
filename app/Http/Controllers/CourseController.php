@@ -41,7 +41,7 @@ class CourseController extends Controller
         $id = $semester->id;
         $courses = Course::select('*')->where('semester_id', "=", $id)->where('level', "=", "$request->level")->get();
 
-        return response(['courses'=>$courses],200) ;
+        return response($courses,200) ;
     }
     public function create(Request $request)
     {
@@ -79,16 +79,16 @@ class CourseController extends Controller
         
     }
     public function update(Request $request){
-        $request->validate([
-            'name_ar' => 'required',
-            'name_en' => 'required',
-            'level' => 'required',
-            'code' => 'required',
-            'unit' => 'required',
-            'year' => 'required',
-            'ins_name'=>'required',
-            'success'=>'required'
-        ]);
+        // $request->validate([
+        //     'name_ar' => 'required',
+        //     'name_en' => 'required',
+        //     'level' => 'required',
+        //     'code' => 'required',
+        //     'unit' => 'required',
+        //     'year' => 'required',
+        //     'ins_name'=>'required',
+        //     'success'=>'required'
+        // ]);
         $instructor = Instructor::where('name_ar', '=', "$request->ins_name")->first();
         if($instructor==null){
             return response("لا يوجد تدريسي بهذا الاسم, الرجاء التأكد",409);
@@ -100,7 +100,7 @@ class CourseController extends Controller
         $course->year = $request->year;
         $course->code = $request->code;
         $course->unit = $request->unit;
-        $course->instructor_id = $instructor->unit;
+        $course->instructor_id = $instructor->id;
         $course->success = $request->success;
         $course-> save();
     

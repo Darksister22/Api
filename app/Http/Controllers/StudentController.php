@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\Course;
 use App\Models\Carry;
+use App\Models\Degree;
 use Illuminate\Support\Facades\Gate;
 
 class StudentController extends Controller

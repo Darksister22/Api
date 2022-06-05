@@ -34,4 +34,8 @@ class Course extends Model
     {
         return $this->belongsToMany(Semester::class);
     }
+    public function degrees()
+    {
+        return $this->hasMany(Degree::class);
+    }
 }

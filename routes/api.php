@@ -50,8 +50,11 @@ Route::post('/courses/destroy/{id}', [CourseController::class, 'destroy']);
 
 //DEGREES ARE A NIGHTMARE FOR ANOTHER DAY
 Route::post('/degrees/createhelp', [DegreeController::class, 'createhelp']);
-Route::get('/degrees', [DegreeController::class, 'getStudentDegrees']);
-Route::get('/degrees/create', [DegreeController::class, 'createStudentDegrees']);
+Route::get('/degrees', [DegreeController::class, 'getDegrees']);
+Route::get('/degrees/fourty', [DegreeController::class, 'getForty']);
+
+Route::post('/degrees/student', [DegreeController::class, 'getStudentDegrees']);
+Route::post('/degrees/create', [DegreeController::class, 'createStudentDegrees']);
 
 //SEMESTERS ALL DONE
 Route::post('/semesters/end', [SemesterController::class, 'end']);
