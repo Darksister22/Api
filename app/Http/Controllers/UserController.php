@@ -78,6 +78,7 @@ class UserController extends Controller
             'token_type' => 'Bearer'
         ]);
     }
+
     public function update(Request $request){
         $request->validate([
             'id'=>'required',
@@ -94,8 +95,9 @@ class UserController extends Controller
         $users->email = $request->email;
         $users->role = $request->role;
         $users-> save();
-    
     }
+
+    
     public function destroy($id)
     {
         User::destroy($id);

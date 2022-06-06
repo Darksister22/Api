@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Instructor;
 use App\Models\Semester;
 use App\Models\course_instructor;
+use App\Models\Degree;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use PHPUnit\Framework\Constraint\Count;
@@ -79,16 +80,16 @@ class CourseController extends Controller
         
     }
     public function update(Request $request){
-        // $request->validate([
-        //     'name_ar' => 'required',
-        //     'name_en' => 'required',
-        //     'level' => 'required',
-        //     'code' => 'required',
-        //     'unit' => 'required',
-        //     'year' => 'required',
-        //     'ins_name'=>'required',
-        //     'success'=>'required'
-        // ]);
+        $request->validate([
+            'name_ar' => 'required',
+            'name_en' => 'required',
+            'level' => 'required',
+            'code' => 'required',
+            'unit' => 'required',
+            'year' => 'required',
+            'ins_name'=>'required',
+            'success'=>'required'
+        ]);
         $instructor = Instructor::where('name_ar', '=', "$request->ins_name")->first();
         if($instructor==null){
             return response("لا يوجد تدريسي بهذا الاسم, الرجاء التأكد",409);
@@ -107,7 +108,11 @@ class CourseController extends Controller
     }
     public function destroy($id)
     {
+        $deg=Degree::where("course_id","=",$id)->get();
         Course::destroy($id);
+        foreach ($deg as $d ) {
+            Degree::destroy($deg);
+       }
         return response('تم حذف الكورس بنجاح', 200);
     }
 }

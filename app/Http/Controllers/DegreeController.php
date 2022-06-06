@@ -50,15 +50,69 @@ class DegreeController extends Controller
     }
     public function getDegrees(Request $request)
     {
+        $deg = Degree::whereHas('courses', function($q) {
+            $semester = Semester::select('*')->get()->last();
+            $id = $semester->id;
+            $q->where('semester_id', '=', $id);
+        })->with("courses")->with("student")->get();
+         return $deg;
+    }
 
-
+    public function countDegree(Request $request){
         $deg = Degree::whereHas('courses', function($q) {
             $semester = Semester::where('isEnded', '=', false)->first();
             $id = $semester->id;
             $q->where('semester_id', '=', $id);
         })->with("courses")->with("student")->get();
-         return $deg;
-      
+        foreach ($deg as $deg) {
+           $course = Course::select('*')->where('id','=',"$deg->course_id")->first(); 
+           if($deg->sixty3 != null ){
+            $total = $deg->fourty + $deg->sixty3;
+            if($total>$course->success){
+                $deg->final3=$total;
+                $deg -> sts = "pass";
+                $deg->approx= "B";
+             }
+            else {
+                $deg->final3=$total;
+                $deg -> sts = "fail";
+                $deg->approx= "F";
+            }}
+            if($deg->sixty2 != null ){
+                $total = $deg->fourty + $deg->sixty2;
+                if($total>$course->success){
+                    $deg->final2=$total;
+                    $deg -> sts = "pass";
+                    $deg->approx= $this->getApprox($total,$course->success);
+                }
+                else {
+                    $deg->final2=$total;
+                    $deg -> sts = "fail";
+                    $deg->approx= $this->getApprox($total,$course->success);
+                }}
+                if($deg->sixty1 != null ){
+                    $total = $deg->fourty + $deg->sixty1;
+                    if($total>$course->success){
+         
+                        $deg->final1=$total;
+                        $deg -> sts = "pass";
+                        $deg->approx= $this->getApprox($total,$course->success);
+                    }
+                    else {
+                        $deg->final1=$total;
+                        $deg -> sts = 'fail';
+                        $deg->approx= $this->getApprox($total,$course->success);
+                    }}
+                    $deg->save();
+        }
+    }
+    public function getApprox($deg,$success){
+        if($deg<$success) return "F";
+        if($deg<=100 && $deg>=90) return "A";
+        if($deg<90 && $deg>=80) return "B";
+        if($deg<80 && $deg>=70) return "C";
+        if($deg<70 && $deg>=60) return "D";
+        if($deg<60 && $deg>=50) return "E";
     }
     public function getForty(Request $request)
     {

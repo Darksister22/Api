@@ -44,11 +44,15 @@ class StudentController extends Controller
     }
     public function destroy($id)
     {
-        Student::destroy($id);
+        $deg=DEGREE::where("student_id","=",$id)->get();
+
+       Student::destroy($id);
+       foreach ($deg as $d ) {
+            Degree::destroy($deg);
+       }
         return response('تم حذف الطالب بنجاح', 200);
     }
-    public function grad(Request $request)
-    {
+    public function grad(Request $request){
         $request->validate([
             'level'=>'required',
             'year' => 'required',

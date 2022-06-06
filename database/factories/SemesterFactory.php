@@ -14,7 +14,7 @@ class SemesterFactory extends Factory
     public function definition()
     {
         return [
-            'isEnded'=>true,
+            'isEnded'=>false,
             'number'=>'second',
             'year'=>'2021-2022',
         ];

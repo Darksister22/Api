@@ -52,7 +52,7 @@ Route::post('/courses/destroy/{id}', [CourseController::class, 'destroy']);
 Route::post('/degrees/createhelp', [DegreeController::class, 'createhelp']);
 Route::get('/degrees', [DegreeController::class, 'getDegrees']);
 Route::get('/degrees/fourty', [DegreeController::class, 'getForty']);
-
+Route::post('/degrees/cacl', [DegreeController::class, 'countDegree']);
 Route::post('/degrees/student', [DegreeController::class, 'getStudentDegrees']);
 Route::post('/degrees/create', [DegreeController::class, 'createStudentDegrees']);
 
