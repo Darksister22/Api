@@ -19,12 +19,26 @@ class CourseController extends Controller
         $this->middleware('auth:sanctum')
             ->only(['destroy', 'create', 'update']);
     }
-    public function showAll()
+    public function showCurrent()
     {
         $semester = Semester::where('isEnded', '=', false)->first();
         $id = $semester->id;
        // $courses = Course::with('studentsCarry')->select('*')->where('semester_id', "=", $id)->get();
         $courses = Course::with('instructor')->with('studentsCarry')->select('*')->where('semester_id', "=", $id)->get();
+        $newList = [];
+        foreach ($courses as $course) {
+            $students = Student::select('*')->where('level', '=', $course->level)
+                ->where('year', '=', $course->year)
+                ->get();
+            $course['students'] = $students;
+            array_push($newList, $course);
+        }
+        return $newList;
+    }
+    public function showAll()
+    {
+       
+        $courses = Course::with('instructor')->with('studentsCarry')->select('*')->get();
         $newList = [];
         foreach ($courses as $course) {
             $students = Student::select('*')->where('level', '=', $course->level)
@@ -83,10 +97,8 @@ class CourseController extends Controller
         $request->validate([
             'name_ar' => 'required',
             'name_en' => 'required',
-            'level' => 'required',
             'code' => 'required',
             'unit' => 'required',
-            'year' => 'required',
             'ins_name'=>'required',
             'success'=>'required'
         ]);

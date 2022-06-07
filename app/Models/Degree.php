@@ -25,7 +25,7 @@ class Degree extends Model
     ];
     public function courses()
     {
-        return $this->belongsTo('App\Models\Course','course_id');
+        return $this->belongsTo('App\Models\Course','course_id')->with('semester');
     }
     public function student()
     {

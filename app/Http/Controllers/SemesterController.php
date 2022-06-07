@@ -13,7 +13,8 @@ class SemesterController extends Controller
         $this->middleware('auth:sanctum')
             ->only(['destroy', 'create', 'update']);
     }
-    public function create(Request $request){
+    public function create(Request $request)
+    {
         $request->validate([
             'number' => 'required',
             'year' => 'required',
@@ -32,8 +33,14 @@ class SemesterController extends Controller
                 
             ]); 
             }  
-        else return response('غير مسموح',409);  }
-        public function end(){
+        else return response('غير مسموح',409);
+      }
+    public function show(){
+        $sem = Semester::select("*")->get();
+        return $sem; 
+    }
+        public function end()
+        {
 
             $semester = Semester::all()->last();
             $isEnded = $semester->isEnded;
@@ -42,5 +49,6 @@ class SemesterController extends Controller
                 $semester->isEnded = 1; 
                 $semester -> save();
                 }  
-            else return response('غير مسموح',409);  }
+            else return response('غير مسموح',409); 
+         }
 }

@@ -44,7 +44,9 @@ Route::post('/instructors/update', [InstructorController::class, 'update']);
 //COURSES: UPDATE
 Route::post('/courses/create', [CourseController::class, 'create']);
 Route::get('/courses/level', [CourseController::class, 'showLevel']);
-Route::get('/courses', [CourseController::class, 'showAll']);
+Route::get('/courses', [CourseController::class, 'showCurrent']);
+Route::get('/courses/all', [CourseController::class, 'showAll']);
+
 Route::post('/courses/update', [CourseController::class, 'update']);
 Route::post('/courses/destroy/{id}', [CourseController::class, 'destroy']);
 
@@ -55,6 +57,7 @@ Route::get('/degrees/fourty', [DegreeController::class, 'getForty']);
 Route::post('/degrees/cacl', [DegreeController::class, 'countDegree']);
 Route::post('/degrees/student', [DegreeController::class, 'getStudentDegrees']);
 Route::post('/degrees/create', [DegreeController::class, 'createStudentDegrees']);
+Route::get('/degrees/getall', [DegreeController::class, 'getAllDegrees']);
 
 //SEMESTERS ALL DONE
 Route::post('/semesters/end', [SemesterController::class, 'end']);

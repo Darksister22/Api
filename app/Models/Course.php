@@ -32,7 +32,7 @@ class Course extends Model
 
     public function semester()
     {
-        return $this->belongsToMany(Semester::class);
+        return $this->belongsTo(Semester::class);
     }
     public function degrees()
     {

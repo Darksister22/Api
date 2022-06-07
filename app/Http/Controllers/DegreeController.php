@@ -27,27 +27,7 @@ class DegreeController extends Controller
     }
 
     
-    public function getDegrees2(Request $request)
-    {
-        $request->validate([
-            'student_id' => 'required',
-            'course_id' => 'required',
-        ]);
-        //get student with degrees 
-        $s = Student::with(['degrees' => function ($q) use ($request) {
-            $q->where('course_id', '=', $request->course_id);
-        }])->where('id', '=', $request->student_id)->get();
-
-        //get degrees of a student
-        $d = Degree::select('*')->where('course_id', '=', $request->course_id)->where('student_id', '=', $request->student_id)->get();
-
-
-        return [
-            's' => $s,
-            'd' => $d,
-
-        ];
-    }
+  
     public function getDegrees(Request $request)
     {
         $deg = Degree::whereHas('courses', function($q) {
@@ -57,7 +37,11 @@ class DegreeController extends Controller
         })->with("courses")->with("student")->get();
          return $deg;
     }
-
+    public function getAllDegrees(Request $request)
+    {
+        $deg = Degree::with("courses")->with("student")->get();
+         return $deg;
+    }
     public function countDegree(Request $request){
         $deg = Degree::whereHas('courses', function($q) {
             $semester = Semester::where('isEnded', '=', false)->first();
@@ -68,19 +52,19 @@ class DegreeController extends Controller
            $course = Course::select('*')->where('id','=',"$deg->course_id")->first(); 
            if($deg->sixty3 != null ){
             $total = $deg->fourty + $deg->sixty3;
-            if($total>$course->success){
+            if($total>=$course->success){
                 $deg->final3=$total;
                 $deg -> sts = "pass";
-                $deg->approx= "B";
+                $deg->approx= $this->getApprox($total,$course->success);;
              }
             else {
                 $deg->final3=$total;
                 $deg -> sts = "fail";
-                $deg->approx= "F";
+                $deg->approx= $this->getApprox($total,$course->success);
             }}
             if($deg->sixty2 != null ){
                 $total = $deg->fourty + $deg->sixty2;
-                if($total>$course->success){
+                if($total>=$course->success){
                     $deg->final2=$total;
                     $deg -> sts = "pass";
                     $deg->approx= $this->getApprox($total,$course->success);
@@ -92,7 +76,7 @@ class DegreeController extends Controller
                 }}
                 if($deg->sixty1 != null ){
                     $total = $deg->fourty + $deg->sixty1;
-                    if($total>$course->success){
+                    if($total>=$course->success){
          
                         $deg->final1=$total;
                         $deg -> sts = "pass";
