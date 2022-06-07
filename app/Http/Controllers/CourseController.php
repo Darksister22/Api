@@ -109,8 +109,6 @@ class CourseController extends Controller
         $course = Course::select('*')->where('id','=',"$request->id")->first();
         $course->name_ar = $request->name_ar;
         $course->name_en = $request->name_en;
-        $course->level = $request->level;
-        $course->year = $request->year;
         $course->code = $request->code;
         $course->unit = $request->unit;
         $course->instructor_id = $instructor->id;
