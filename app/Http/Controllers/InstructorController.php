@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\course_instructor;
+use App\Models\Degree;
 use App\Models\Instructor;
 use App\Models\Semester;
 use Illuminate\Http\Request;
@@ -47,7 +48,19 @@ class InstructorController extends Controller
     }
     public function destroy($id)
     {
-        Instructor::destroy($id);
+        $semester = Semester::select('*')->get()->last();
+        $id = $semester->id;
+        $inscourse=Course::where("instructor_id","=",$id)->where("semester_id",'=',"$id")->get();
+        if($inscourse==null){
+        Instructor::destroy($id);}
+        else return response(409,"لا يمكن حذف تدريسي لديه مواد حالية");
         return response('تم حذف التدريسي بنجاح', 200);
     }
 }
+
+
+
+
+
+
+

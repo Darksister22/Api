@@ -27,7 +27,7 @@ class CreateStudentsTable extends Migration
             $table->decimal('avg8')->nullable();
             $table->decimal('avg9')->nullable();
             $table->decimal('avg10')->nullable();
-            $table->boolean('isGrad');
+            $table->boolean('isGrad')->default(false);
             $table->enum('level',['bachaelor','master','pHD']);
             $table->enum('year',['first','second','third','fourth','fifth','sixth','seventh','eigth','ninth','tenth']);
             $table->string('note')->nullable();

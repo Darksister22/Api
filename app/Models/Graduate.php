@@ -15,6 +15,8 @@ class Graduate extends Model
         'avg1',
         'avg2',
         'avg3',
+        'isGrad',
+        'avg_final',
         'avg4',
         'avg5',
         'avg6',

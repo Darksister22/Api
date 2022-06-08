@@ -58,10 +58,14 @@ Route::post('/degrees/cacl', [DegreeController::class, 'countDegree']);
 Route::post('/degrees/student', [DegreeController::class, 'getStudentDegrees']);
 Route::post('/degrees/create', [DegreeController::class, 'createStudentDegrees']);
 Route::get('/degrees/getall', [DegreeController::class, 'getAllDegrees']);
+Route::post('/degrees/grad', [DegreeController::class, 'grads']);
+Route::post('/degrees/pass', [DegreeController::class, 'pass']);
+
 
 //SEMESTERS ALL DONE
 Route::post('/semesters/end', [SemesterController::class, 'end']);
 Route::post('/semesters/create', [SemesterController::class, 'create']);
+Route::get('/semesters/get', [SemesterController::class, 'show']);
 
 //USERS ALL DONE
 Route::post('users/login', [UserController::class, 'login']);

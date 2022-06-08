@@ -37,8 +37,12 @@ class SemesterController extends Controller
       }
     public function show(){
         $sem = Semester::select("*")->get();
+     //   $sem = Semester::select("*")->where("number","=","first")->get();
+
         return $sem; 
     }
+
+
         public function end()
         {
 

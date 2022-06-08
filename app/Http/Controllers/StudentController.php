@@ -52,29 +52,9 @@ class StudentController extends Controller
        }
         return response('تم حذف الطالب بنجاح', 200);
     }
-    public function grad(Request $request){
-        $request->validate([
-            'level'=>'required',
-            'year' => 'required',
-        ]);
-        $semester = Semester::all()->last();
-        $isEnded = $semester->isEnded;
-        if ($isEnded==0)
-        {
-        Student::query()
-    ->where('level','=', "$request->level")->where('year','=', "$request->year")
-    ->each(function ($oldRecord) {
-      $newRecord = $oldRecord->replicate();
-      $newRecord->setTable('graduates');
-      $newRecord->save();
-      $oldRecord->delete();
-    });
-    } 
-    else{
-        return response("الرجاء انهاء الكورس الدراسي اولاً",409);
-    }
+
     
-}
+
 public function update(Request $request){
     $request->validate([
         'id' => 'required',

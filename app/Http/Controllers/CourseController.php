@@ -58,8 +58,7 @@ class CourseController extends Controller
 
         return response($courses,200) ;
     }
-    public function create(Request $request)
-    {
+    public function create(Request $request) {
         $request->validate([
             'name_ar' => 'required',
             'name_en' => 'required',
@@ -79,7 +78,6 @@ class CourseController extends Controller
         if($instructor==null){
             return response("لا يوجد تدريسي بهذا الاسم, الرجاء التأكد",409);
         }
-
         Course::create([
             'name_ar' => $request->name_ar,
             'name_en' =>  $request->name_en,
@@ -91,8 +89,9 @@ class CourseController extends Controller
             'year' => $request->year,
             'success'=>$request->success
         ]);
-        
     }
+
+    
     public function update(Request $request){
         $request->validate([
             'name_ar' => 'required',
