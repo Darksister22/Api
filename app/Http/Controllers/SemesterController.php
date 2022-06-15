@@ -15,7 +15,7 @@ class SemesterController extends Controller
         $this->middleware('auth:sanctum')
             ->only(['destroy', 'create', 'update']);
     }
-    
+
     public function create(Request $request)
     {
         $request->validate([
@@ -29,7 +29,9 @@ class SemesterController extends Controller
             return response('انت غير مخول', 403);
         }
         if ($isEnded == 1 && $number == "first") {
-
+            if ($semester->year != $request->year) {
+                return response("لا يوجد فصل اول لهذه السنة الدراسية", 410);
+            }
             $check = Semester::select('*')->where("number", '=', 'second')->get()->last();
             $sem = Semester::create([
                 'isEnded' => false,
@@ -124,5 +126,3 @@ class SemesterController extends Controller
 
     }
 }
-
-
