@@ -35,10 +35,12 @@ class CourseController extends Controller
         }
         return $newList;
     }
-    public function showAll()
+    public function showAll(Request $request)
     {
-       
-        $courses = Course::with('instructor')->with('studentsCarry')->select('*')->get();
+       $year = $request->year;
+        $courses = Course::whereHas("semester",function($q) use($year){
+            $q->where("year","=","$year");
+        })->with('instructor')->with('studentsCarry')->select('*')->get();
         $newList = [];
         foreach ($courses as $course) {
             $students = Student::select('*')->where('level', '=', $course->level)

@@ -24,8 +24,34 @@ class StudentController extends Controller
             ->only(['destroy', 'create', 'update']);
     }
     public function showAll(){
-        $students = Student::select('*')->get();
+        $students = Student::select('*')->where('isGrad','=',false)->get();
         return $students;
+    }
+    public function getCurAvg(Request $request){
+        $id = $request->id; 
+        $degrees = Degree::select("*")->whereHas('courses', function($q) {
+            $q->whereHas('semester', function($q){
+                $q->where("isEnded","=",false);
+            });
+        })->where("student_id","=","$id")->get();
+        $sum = 0 ;
+        $final = 0; 
+        $unit = 0; 
+        foreach($degrees as $degrees){
+            $units = Course::select("unit")->where("id","=","$degrees->course_id")->first();
+            $unit = $unit + $units->unit;
+            if($degrees->final3!=null){
+                $final = $degrees->final3;
+            } else if($degrees->final2!=null){
+                $final = $degrees->final2;
+            } else if($degrees->final1!=null){
+                $final = $degrees->final1;
+            }
+            $final = $final * $units->unit; 
+            $sum = $final + $sum;   
+        }
+        $avg = $sum / $unit;
+        return round($avg,2);
     }
     public function create(Request $request){
         $request->validate([

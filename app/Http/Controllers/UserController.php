@@ -62,7 +62,7 @@ class UserController extends Controller
 
         if (!Gate::allows('is-super')) {
             
-            return response('انت غير مخول لانشاء ادمن جديد', 403);
+            return response('انت غير مخول  ', 403);
         }
         $user = User::create([
             'name' => $request->name,

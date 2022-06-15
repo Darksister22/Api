@@ -29,6 +29,7 @@ class CreateDegreesTable extends Migration
             $table->timestamps();
         });
     }
+    
 
     /**
      * Reverse the migrations.

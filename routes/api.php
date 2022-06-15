@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\DegreeController;
+use App\Http\Controllers\GradController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TestController;
@@ -27,31 +28,32 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-//Attendency done for now
 Route::get('/students', [StudentController::class, 'showAll']);
 Route::post('/students/grad', [StudentController::class, 'grad']);
 Route::post('/students/attend',[StudentController::class,'attendency']);
 Route::post('/students/create', [StudentController::class, 'create']);
 Route::post('/students/destroy/{id}', [StudentController::class, 'destroy']);
 Route::post('/students/update',[StudentController::class,'update']);
+Route::get('/students/getCurAvg',[StudentController::class,'getCurAvg']);
 
-//ALL DONE THANK GOD
 Route::get('/instructors', [InstructorController::class, 'showAll']);
 Route::post('/instructors/create', [InstructorController::class, 'create']);
 Route::post('/instructors/destroy/{id}', [InstructorController::class, 'destroy']);
 Route::post('/instructors/update', [InstructorController::class, 'update']);
 
-//COURSES: UPDATE
 Route::post('/courses/create', [CourseController::class, 'create']);
 Route::get('/courses/level', [CourseController::class, 'showLevel']);
 Route::get('/courses', [CourseController::class, 'showCurrent']);
 Route::get('/courses/all', [CourseController::class, 'showAll']);
-
 Route::post('/courses/update', [CourseController::class, 'update']);
 Route::post('/courses/destroy/{id}', [CourseController::class, 'destroy']);
 
-//DEGREES ARE A NIGHTMARE FOR ANOTHER DAY
+Route::get('/grads/show', [GradController::class, 'showall']);
+Route::post('/grads/update',[GradController::class,'update']);
+
 Route::post('/degrees/createhelp', [DegreeController::class, 'createhelp']);
+Route::get('/degrees/showhelp', [DegreeController::class, 'showhelp']);
+Route::post('/degrees/addhelp', [DegreeController::class, 'addhelp']);
 Route::get('/degrees', [DegreeController::class, 'getDegrees']);
 Route::get('/degrees/fourty', [DegreeController::class, 'getForty']);
 Route::post('/degrees/cacl', [DegreeController::class, 'countDegree']);
@@ -61,13 +63,10 @@ Route::get('/degrees/getall', [DegreeController::class, 'getAllDegrees']);
 Route::post('/degrees/grad', [DegreeController::class, 'grads']);
 Route::post('/degrees/pass', [DegreeController::class, 'pass']);
 
-
-//SEMESTERS ALL DONE
 Route::post('/semesters/end', [SemesterController::class, 'end']);
 Route::post('/semesters/create', [SemesterController::class, 'create']);
 Route::get('/semesters/get', [SemesterController::class, 'show']);
 
-//USERS ALL DONE
 Route::post('users/login', [UserController::class, 'login']);
 Route::post('users/create', [UserController::class, 'create']);
 Route::get('users/get', [UserController::class, 'get']);
