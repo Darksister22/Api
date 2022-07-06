@@ -2,10 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Course;
-use App\Models\Student;
 
 class Degree extends Model
 {
@@ -31,5 +28,8 @@ class Degree extends Model
     {
         return $this->belongsTo(Student::class);
     }
-    
+    public function helps()
+    {
+        return $this->belongsTo(Degreeh::class);
+    }
 }

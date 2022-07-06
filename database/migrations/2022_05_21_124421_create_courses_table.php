@@ -17,8 +17,9 @@ class CreateCoursesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('semester_id');
             $table->unsignedBigInteger('instructor_id');
+            $table->boolean('isCounts')->default(true);
             $table->enum('level',['bachaelor','master','pHD']);
-            $table->enum('year',['first','second','third','fourth','fifth','sixth','seventh','eigth','ninth','tenth']);
+            $table->enum('year',['first','second','third','fourth','fifth']);
             $table->string('name_ar')->nullable();
             $table->string('name_en');
             $table->string('code');

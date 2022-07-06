@@ -25,6 +25,7 @@ class CreateDegreesTable extends Migration
             $table->decimal('final2')->nullable();
             $table->decimal('final3')->nullable();
             $table->enum('approx',['A','B','C','D','E','F'])->nullable();
+            $table->boolean("isOld")->nullable();
             $table->enum('sts',['pass','fail','carry','other'])->nullable();
             $table->timestamps();
         });

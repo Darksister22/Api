@@ -11,6 +11,13 @@ class Degreeh extends Model
     protected $fillable = [
         'amt',
         'source',
-
     ];
+    public function degrees()
+    {
+        return $this->hasMany(Degree::class);
+    }
+    public function helps()
+    {
+        return $this->belongsToMany(Helps::class);
+    }
 }

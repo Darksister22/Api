@@ -5,64 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Carry;
 use App\Models\Course;
 use App\Models\Degree;
-use App\Models\Degreeh;
 use App\Models\Graduate;
+use App\Models\Helps;
 use App\Models\Semester;
 use App\Models\Student;
 use Illuminate\Http\Request;
 
 class DegreeController extends Controller
 {
-    public function createhelp(Request $request)
-    {$request->validate([
-        'source' => 'required',
-        'amt' => 'required',
-    ]);
-
-        Degreeh::create([
-            'source' => $request->source,
-            'amt' => $request->amt,
-        ]);
-    }
-    public function showhelp(Request $request)
-    {
-        return Degreeh::select('*')->get();
-    }
-
-    public function addhelp(Request $request)
-    {
-        $request->validate([
-            "source" => "required",
-            "deg_id" => "required",
-        ]);
-        $deg = Degree::select("*")->where("id", "=", "$request->deg_id")->first();
-        $course = Course::select("*")->where("id", "=", "$deg->course_id")->first();
-        $help = Degreeh::select("*")->where("source", "=", "$request->source")->first();
-        $final = 0;
-        if ($deg->sixty3 != null) {
-            $final = $deg->final3 + $help->amt;
-            if ($final >= $course->success) {
-                $dif = $course->success - $deg->sixty3;
-                $deg->sixty1 = $deg->sixty3 + $dif;
-                $deg->save();
-            }
-        } else if ($deg->sixty2 != null) {
-            $final = $deg->final2 + $help->amt;
-            if ($final >= $course->success) {
-                $dif = $course->success - $deg->sixty2;
-                $deg->sixty2 = $deg->sixty2 + $dif;
-                $deg->save();
-            }
-        } else if ($deg->sixty1 != null) {
-            $final = $deg->final1 + $help->amt;
-            if ($final >= $course->success) {
-                $dif = $course->success - $deg->sixty1;
-                $deg->sixty1 = $deg->sixty1 + $dif;
-                $deg->save();
-            }
-        }
-
-    }
 
     public function getDegrees(Request $request)
     {
@@ -78,11 +28,79 @@ class DegreeController extends Controller
         $request->validate([
             "year" => "required",
         ]);
-        $deg = Degree::with("courses")->with("student")->get();
-        return $deg;
+        $degrees = Degree::select("*")->whereHas('courses', function ($q) use ($request) {
+            $year = $request->year;
+            $q->whereHas('semester', function ($q) use ($year) {
+                $q->where("year", "=", "$year");
+            });
+        })->with("courses")->with("student")->get();
+        return $degrees;
     }
 
-    public function countDegree()
+    public function getYearDegrees()
+    {
+        $semester = Semester::all()->last();
+        $year = $semester->year;
+        $degrees = Degree::select("*")->whereHas('courses', function ($q) use ($year) {
+            $q->whereHas('semester', function ($q) use ($year) {
+                $q->where("year", "=", "$year");
+            });
+        })->with("courses")->with("student")->get();
+        return $degrees;
+    }
+
+    public function countFirst() //calc grades for first semester. Used in yearDeg page.
+
+    {
+        $deg = Degree::whereHas('courses', function ($q) {
+            $cursem = Semester::where('isEnded', '=', false)->first();
+            $yearsem = $cursem->year;
+            $semester = Semester::where('year', "=", "$yearsem")->where('number', "=", "first")->first();
+            $id = $semester->id;
+            $q->where('semester_id', '=', "$id");
+        })->with("courses")->with("student")->get();
+        foreach ($deg as $deg) {
+            $help = Helps::select('*')->where("degree_id", "=", "$deg->id")->first();
+            if ($help == '[]') {
+                $course = Course::select('*')->where('id', '=', "$deg->course_id")->first();
+                if ($deg->sixty3 != null) {
+                    $total = $deg->fourty + $deg->sixty3;
+                    if ($total >= $course->success) {
+                        $deg->final3 = $total;
+                        $deg->sts = "pass";
+                        $deg->approx = $this->getApprox($total, $course->success);
+                    } else {
+                        $deg->final3 = $total;
+                        $deg->sts = "fail";
+                        $deg->approx = $this->getApprox($total, $course->success);
+                    }} else if ($deg->sixty2 != null) {
+                    $total = $deg->fourty + $deg->sixty2;
+                    if ($total >= $course->success) {
+                        $deg->final2 = $total;
+                        $deg->sts = "pass";
+                        $deg->approx = $this->getApprox($total, $course->success);
+                    } else {
+                        $deg->final2 = $total;
+                        $deg->sts = "fail";
+                        $deg->approx = $this->getApprox($total, $course->success);
+                    }} else if ($deg->sixty1 != null) {
+                    $total = $deg->fourty + $deg->sixty1;
+                    if ($total >= $course->success) {
+
+                        $deg->final1 = $total;
+                        $deg->sts = "pass";
+                        $deg->approx = $this->getApprox($total, $course->success);
+                    } else {
+                        $deg->final1 = $total;
+                        $deg->sts = 'fail';
+                        $deg->approx = $this->getApprox($total, $course->success);
+                    }}
+                $deg->save();}
+        }
+    }
+
+    public function countDegree() //calc grades for current semester no matter the number. Used in both yearDeg and DegCur.
+
     {
         $deg = Degree::whereHas('courses', function ($q) {
             $semester = Semester::where('isEnded', '=', false)->first();
@@ -90,41 +108,43 @@ class DegreeController extends Controller
             $q->where('semester_id', '=', $id);
         })->with("courses")->with("student")->get();
         foreach ($deg as $deg) {
-            $course = Course::select('*')->where('id', '=', "$deg->course_id")->first();
-            if ($deg->sixty3 != null) {
-                $total = $deg->fourty + $deg->sixty3;
-                if ($total >= $course->success) {
-                    $deg->final3 = $total;
-                    $deg->sts = "pass";
-                    $deg->approx = $this->getApprox($total, $course->success);
-                } else {
-                    $deg->final3 = $total;
-                    $deg->sts = "fail";
-                    $deg->approx = $this->getApprox($total, $course->success);
-                }} else if ($deg->sixty2 != null) {
-                $total = $deg->fourty + $deg->sixty2;
-                if ($total >= $course->success) {
-                    $deg->final2 = $total;
-                    $deg->sts = "pass";
-                    $deg->approx = $this->getApprox($total, $course->success);
-                } else {
-                    $deg->final2 = $total;
-                    $deg->sts = "fail";
-                    $deg->approx = $this->getApprox($total, $course->success);
-                }} else if ($deg->sixty1 != null) {
-                $total = $deg->fourty + $deg->sixty1;
-                if ($total >= $course->success) {
+            $help = Helps::select('*')->where("degree_id", "=", "$deg->id")->first();
+            if ($help == '[]' || $help==null) {
+                $course = Course::select('*')->where('id', '=', "$deg->course_id")->first();
+                if ($deg->sixty3 != null) {
+                    $total = $deg->fourty + $deg->sixty3;
+                    if ($total >= $course->success) {
+                        $deg->final3 = $total;
+                        $deg->sts = "pass";
+                        $deg->approx = $this->getApprox($total, $course->success);
+                    } else {
+                        $deg->final3 = $total;
+                        $deg->sts = "fail";
+                        $deg->approx = $this->getApprox($total, $course->success);
+                    }} else if ($deg->sixty2 != null) {
+                    $total = $deg->fourty + $deg->sixty2;
+                    if ($total >= $course->success) {
+                        $deg->final2 = $total;
+                        $deg->sts = "pass";
+                        $deg->approx = $this->getApprox($total, $course->success);
+                    } else {
+                        $deg->final2 = $total;
+                        $deg->sts = "fail";
+                        $deg->approx = $this->getApprox($total, $course->success);
+                    }} else if ($deg->sixty1 != null) {
+                    $total = $deg->fourty + $deg->sixty1;
+                    if ($total >= $course->success) {
 
-                    $deg->final1 = $total;
-                    $deg->sts = "pass";
-                    $deg->approx = $this->getApprox($total, $course->success);
-                } else {
-                    $deg->final1 = $total;
-                    $deg->sts = 'fail';
-                    $deg->approx = $this->getApprox($total, $course->success);
-                }}
-            $deg->save();
-        }
+                        $deg->final1 = $total;
+                        $deg->sts = "pass";
+                        $deg->approx = $this->getApprox($total, $course->success);
+                    } else {
+                        $deg->final1 = $total;
+                        $deg->sts = 'fail';
+                        $deg->approx = $this->getApprox($total, $course->success);
+                    }}
+                $deg->save();
+            }}
     }
 
     public function pass(Request $request)
@@ -138,17 +158,33 @@ class DegreeController extends Controller
             return response('الكورس الدراسي منتهي و لا يمكن عبور الطلبة منه', 409);
         } else if ($semester->number == 'first') {
             return response('لا يمكن عبور الطلبة من الكورس الاول', 410);
+        } else if ($semester->bcalc == true || $semester->mcalc == true || $semester->pcalc == true) {
+            return response('تم الاحتساب مسبقاً', 411);
         } else {
-            $stu = Student::select('*')->where("level", "=", "$request->level")->get();
+
+            //register that the process is calculated for the level, prevents it from happening twice.
+            switch ($request->level) {
+                case "bachaelor":{
+                        $semester->bcalc = true;
+                        break;}
+                case "master":{ $semester->mcalc = true;
+                        break;}
+                case "pHD":{ $semester->pcalc = true;
+                        break;}
+            }
+            $semester->save();
+
+            //the process is performed for each student.
+            $stu = Student::select('*')->where("level", "=", "$request->level")->where("isEnded", "=", false)->get();
             foreach ($stu as $stu) {
+
                 //get average of student for courses only INSIDE their year. (no carries or attends)
                 $degrees = Degree::select("*")->whereHas('courses', function ($q) use ($semester) {
                     $year = $semester->year;
-                    $q->whereHas('semester', function ($q) use ($year) {
+                    $q->where("isCounts", "=", true)->whereHas('semester', function ($q) use ($year) {
                         $q->where("year", "=", "$year");
                     });
                 })->where("student_id", "=", "$stu->id")->get();
-
                 $sum = 0;
                 $final = 0;
                 $unit = 0;
@@ -174,6 +210,7 @@ class DegreeController extends Controller
                 if ($carries == '[]') {
                 } else {
                     foreach ($carries as $carries) {
+                        //select all courses within the previous year.
                         $year = Course::select("year")->where("id", "=", "$carries->course_id")->first();
                         $degrees = Degree::whereHas("courses", function ($q) use ($year) {
                             $q->where("year", "=", "$year->year");
@@ -209,9 +246,10 @@ class DegreeController extends Controller
                         $q->where("year", "=", "$year")->where("number", "=", "first");
                     });
                 })->where("student_id", "=", "$stu->id")->where("sts", "=", "fail")->get();
+
                 $failed1 = count($fails1);
 
-                //Determine what courses the student will carry
+                //set carried courses
                 if ($failed1 != 0) {
                     foreach ($fails1 as $fails1) {
                         $failedcourse = $fails1->course_id;
@@ -227,12 +265,11 @@ class DegreeController extends Controller
                 $fails2 = Degree::select("*")->whereHas('courses', function ($q) use ($semester) {
                     $year = $semester->year;
                     $q->whereHas('semester', function ($q) use ($year) {
-                        $q->where("year", "=", "$year")->where("number", "=", "seconds");
+                        $q->where("year", "=", "$year")->where("number", "=", "second");
                     });
                 })->where("student_id", "=", "$stu->id")->where("sts", "=", "fail")->get();
-                $failed2 = count($fails1);
-
-                //Determine what courses the student will carry
+                $failed2 = count($fails2);
+                //set carried courses
                 if ($failed2 != 0) {
                     foreach ($fails2 as $fails2) {
                         $failedcourse = $fails2->course_id;
@@ -243,11 +280,16 @@ class DegreeController extends Controller
                         ]);}
 
                 }
+                $failed = false; 
+                if ($request->passavg != "" && $avg < $request->passavg) {
+                    $failed = true;
+                }
+                //Pass or graduate student
+                if ($stu->year == $request->grad_year && $failed1 == 0 && $failed2 == 0 && !$failed) {
+                    $this->grad($stu, $request->grad_year);} //move graduate to graduates table if they have no fails
 
-                //Pass and graduate students
-                if ($stu->year == $request->grad_year && $failed1 == 0 && $failed2 == 0) {
-                    $this->grad($stu, $request->grad_year);} else if (($failed1 <= 2 && $failed2 <= 2) && $stu->year != $request->grad_year) {
-                    $this->nextyear($stu);
+                else if (($failed1 <= 2 && $failed2 <= 2) && $stu->year != $request->grad_year && !$failed) {
+                    $this->nextyear($stu); //pass student to next year if they have 2 or less fails for each semester
                 }
             }
 
@@ -302,23 +344,7 @@ class DegreeController extends Controller
         } else if ($year == 'fourth') {
             $stu->year = 'fifth';
             $stu->save();
-        } else if ($year == 'fifth') {
-            $stu->year = 'sixth';
-            $stu->save();
-        } else if ($year == 'sixth') {
-            $stu->year = 'seventh';
-            $stu->save();
-        } else if ($year == 'seventh') {
-            $stu->year = 'eigth';
-            $stu->save();
-        } else if ($year == 'eigth') {
-            $stu->year = 'ninth';
-            $stu->save();
-        } else if ($year == 'ninth') {
-            $stu->year = 'tenth';
-            $stu->save();
         }
-
     }
 
     public function setAvg($stu, $avg)
@@ -334,16 +360,6 @@ class DegreeController extends Controller
             $stu->avg4 = $avg;
         } else if ($year == "fifth") {
             $stu->avg5 = $avg;
-        } else if ($year == "sixth") {
-            $stu->avg6 = $avg;
-        } else if ($year == "seventh") {
-            $stu->avg7 = $avg;
-        } else if ($year == "eigth") {
-            $stu->avg8 = $avg;
-        } else if ($year == "ninth") {
-            $stu->avg9 = $avg;
-        } else if ($year == "tenth") {
-            $stu->avg10 = $avg;
         }
         $stu->save();
     }
@@ -359,16 +375,6 @@ class DegreeController extends Controller
             $stu->avg4 = $avg;
         } else if ($year == "fifth") {
             $stu->avg5 = $avg;
-        } else if ($year == "sixth") {
-            $stu->avg6 = $avg;
-        } else if ($year == "seventh") {
-            $stu->avg7 = $avg;
-        } else if ($year == "eigth") {
-            $stu->avg8 = $avg;
-        } else if ($year == "ninth") {
-            $stu->avg9 = $avg;
-        } else if ($year == "tenth") {
-            $stu->avg10 = $avg;
         }
         $stu->save();
     }
@@ -430,7 +436,6 @@ class DegreeController extends Controller
         $request->validate([
             'student_id' => 'required',
             'course_id' => 'required',
-
         ]);
         $course = Course::select('*')->where('id', '=', "$request->course_id")->first();
         $student = Student::select('*')->where('id', '=', "$request->student_id")->first();
@@ -445,8 +450,7 @@ class DegreeController extends Controller
                 'course_id' => $course->id,
                 'fourty' => $request->fourty,
                 'sixty1' => $request->sixty1,
-                'sixty2' => $request->sixty2,
-                'sixty3' => $request->sixty3,
+
             ]);
             return response('تم الاضافة', 200);
         } else if ($results != null) {

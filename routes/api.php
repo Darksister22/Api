@@ -5,13 +5,13 @@ use App\Http\Controllers\DegreeController;
 use App\Http\Controllers\GradController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TestController;
+use App\Http\Controllers\HelpController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\SemesterController;
-use App\Models\Degree;
+use App\Http\Controllers\TestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +33,8 @@ Route::post('/students/grad', [StudentController::class, 'grad']);
 Route::post('/students/attend',[StudentController::class,'attendency']);
 Route::post('/students/create', [StudentController::class, 'create']);
 Route::post('/students/destroy/{id}', [StudentController::class, 'destroy']);
+Route::post('/students/remove/{id}', [StudentController::class, 'remove']);
+
 Route::post('/students/update',[StudentController::class,'update']);
 Route::get('/students/getCurAvg',[StudentController::class,'getCurAvg']);
 
@@ -40,6 +42,9 @@ Route::get('/instructors', [InstructorController::class, 'showAll']);
 Route::post('/instructors/create', [InstructorController::class, 'create']);
 Route::post('/instructors/destroy/{id}', [InstructorController::class, 'destroy']);
 Route::post('/instructors/update', [InstructorController::class, 'update']);
+
+Route::post('/test', [TestController::class, 'exfinal']);
+
 
 Route::post('/courses/create', [CourseController::class, 'create']);
 Route::get('/courses/level', [CourseController::class, 'showLevel']);
@@ -51,17 +56,24 @@ Route::post('/courses/destroy/{id}', [CourseController::class, 'destroy']);
 Route::get('/grads/show', [GradController::class, 'showall']);
 Route::post('/grads/update',[GradController::class,'update']);
 
-Route::post('/degrees/createhelp', [DegreeController::class, 'createhelp']);
-Route::get('/degrees/showhelp', [DegreeController::class, 'showhelp']);
-Route::post('/degrees/addhelp', [DegreeController::class, 'addhelp']);
+Route::post('/degrees/createhelp', [HelpController::class, 'createhelp']);
+Route::get('/degrees/showhelp', [HelpController::class, 'showhelp']);
+Route::post('/degrees/addhelp', [HelpController::class, 'addhelp']);
+Route::get('/degrees/helpstu', [HelpController::class, 'helpstu']);
+
+
 Route::get('/degrees', [DegreeController::class, 'getDegrees']);
 Route::get('/degrees/fourty', [DegreeController::class, 'getForty']);
 Route::post('/degrees/cacl', [DegreeController::class, 'countDegree']);
+Route::post('/degrees/cacl1', [DegreeController::class, 'countfirst']);
 Route::post('/degrees/student', [DegreeController::class, 'getStudentDegrees']);
 Route::post('/degrees/create', [DegreeController::class, 'createStudentDegrees']);
 Route::get('/degrees/getall', [DegreeController::class, 'getAllDegrees']);
+Route::get('/degrees/getyear', [DegreeController::class, 'getYearDegrees']);
 Route::post('/degrees/grad', [DegreeController::class, 'grads']);
 Route::post('/degrees/pass', [DegreeController::class, 'pass']);
+
+Route::post('export',[UserController::class, 'export']);
 
 Route::post('/semesters/end', [SemesterController::class, 'end']);
 Route::post('/semesters/create', [SemesterController::class, 'create']);

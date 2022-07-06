@@ -50,7 +50,7 @@ class InstructorController extends Controller
     {
         $semester = Semester::select('*')->get()->last();
         $id = $semester->id;
-        $inscourse=Course::where("instructor_id","=",$id)->where("semester_id",'=',"$id")->get();
+        $inscourse=Course::where("instructor_id","=","$id")->where("semester_id",'=',"$id")->get();
         if($inscourse==null){
         Instructor::destroy($id);}
         else return response(409,"لا يمكن حذف تدريسي لديه مواد حالية");

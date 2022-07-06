@@ -23,6 +23,7 @@ class Student extends Model
         'avg8',
         'avg10',
         'note',
+        'isEnded',
     ];
 
     public function courseCarry()

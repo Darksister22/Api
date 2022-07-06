@@ -30,7 +30,7 @@ class StudentController extends Controller
     public function getCurAvg(Request $request){
         $id = $request->id; 
         $degrees = Degree::select("*")->whereHas('courses', function($q) {
-            $q->whereHas('semester', function($q){
+            $q->where("isCounts","=",false)->whereHas('semester', function($q){
                 $q->where("isEnded","=",false);
             });
         })->where("student_id","=","$id")->get();
@@ -38,7 +38,8 @@ class StudentController extends Controller
         $final = 0; 
         $unit = 0; 
         foreach($degrees as $degrees){
-            $units = Course::select("unit")->where("id","=","$degrees->course_id")->first();
+            $id = $degrees->course_id; 
+            $units = Course::select("unit")->where("id","=","$id")->first();
             $unit = $unit + $units->unit;
             if($degrees->final3!=null){
                 $final = $degrees->final3;
@@ -79,7 +80,14 @@ class StudentController extends Controller
         return response('تم حذف الطالب بنجاح', 200);
     }
 
-    
+    public function remove($id)
+    {
+
+     $student =Student::where('id','=',"$id")->first();
+     $student->isEnded = true; 
+     $student->save();
+        return response('تم حذف الطالب بنجاح', 200);
+    }
 
 public function update(Request $request){
     $request->validate([

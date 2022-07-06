@@ -23,7 +23,6 @@ class CourseController extends Controller
     {
         $semester = Semester::where('isEnded', '=', false)->first();
         $id = $semester->id;
-       // $courses = Course::with('studentsCarry')->select('*')->where('semester_id', "=", $id)->get();
         $courses = Course::with('instructor')->with('studentsCarry')->select('*')->where('semester_id', "=", $id)->get();
         $newList = [];
         foreach ($courses as $course) {
@@ -69,7 +68,7 @@ class CourseController extends Controller
             'unit' => 'required',
             'year' => 'required',
             'ins_name'=>'required',
-            'success'=>'required'
+            'success'=>'required',
         ]);
         $course = Course::where('name_en', '=', "$request->name_en")->first();
         if ($course !== null && $course->name_en!=$request->name_en) {
@@ -80,6 +79,7 @@ class CourseController extends Controller
         if($instructor==null){
             return response("لا يوجد تدريسي بهذا الاسم, الرجاء التأكد",409);
         }
+        
         Course::create([
             'name_ar' => $request->name_ar,
             'name_en' =>  $request->name_en,
@@ -91,6 +91,9 @@ class CourseController extends Controller
             'year' => $request->year,
             'success'=>$request->success
         ]);
+        $crs = Course::all()->last();
+        $crs->isCounts = $request->isCounts;
+        $crs->save();
     }
 
     

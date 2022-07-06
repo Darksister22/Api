@@ -16,7 +16,7 @@ class HomeController extends Controller
         $students=$students->count();
         $instuctors=Instructor::SELECT('*')->get();
         $instuctors=$instuctors->count();
-        $semester=Semester::SELECT('*')->get()->last();
+        $semester=Semester::SELECT('*')->where("isEnded","=",false)->first();
         $courses=Course::SELECT('*')->where('semester_id','=',"$semester->id")->get();
         $courses=$courses->count();
         

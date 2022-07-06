@@ -16,6 +16,9 @@ class CreateSemestersTable extends Migration
         Schema::create('semesters', function (Blueprint $table) {
             $table->id();
             $table->boolean('isEnded');
+            $table->boolean('bcalc')->default(false);
+            $table->boolean('mcalc')->default(false);
+            $table->boolean('pcalc')->default(false);
             $table->enum('number',['first','second']);
             $table->string('year');
             $table->timestamps();
