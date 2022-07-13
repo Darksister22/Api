@@ -27,7 +27,7 @@ class CourseController extends Controller
         $newList = [];
         foreach ($courses as $course) {
             $students = Student::select('*')->where('level', '=', $course->level)
-                ->where('year', '=', $course->year)
+                ->where('year', '=', $course->year)->where('isEnded',"=",false)
                 ->get();
             $course['students'] = $students;
             array_push($newList, $course);

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\CourseExport;
+use App\Exports\FourtyExport;
+use App\Exports\YearExport;
 use App\Models\Carry;
 use App\Models\Course;
 use App\Models\Degree;
@@ -109,7 +112,7 @@ class DegreeController extends Controller
         })->with("courses")->with("student")->get();
         foreach ($deg as $deg) {
             $help = Helps::select('*')->where("degree_id", "=", "$deg->id")->first();
-            if ($help == '[]' || $help==null) {
+            if ($help == '[]' || $help == null) {
                 $course = Course::select('*')->where('id', '=', "$deg->course_id")->first();
                 if ($deg->sixty3 != null) {
                     $total = $deg->fourty + $deg->sixty3;
@@ -280,7 +283,7 @@ class DegreeController extends Controller
                         ]);}
 
                 }
-                $failed = false; 
+                $failed = false;
                 if ($request->passavg != "" && $avg < $request->passavg) {
                     $failed = true;
                 }
@@ -464,5 +467,18 @@ class DegreeController extends Controller
 
         };
 
+    }
+
+    public function exportfourty(Request $request)
+    {
+        return (new FourtyExport($request))->download("coursefourty.xlsx");
+    }
+    public function exportcourse(Request $request)
+    {
+        return (new CourseExport($request))->download("course.xlsx");
+    }
+    public function exportresult(Request $request)
+    {
+        return (new YearExport($request))->download("student.xlsx");
     }
 }

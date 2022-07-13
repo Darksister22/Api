@@ -104,9 +104,6 @@ class UserController extends Controller
         return response('تم حذف المستخدم بنجاح', 200);
     }
 
-    public function export(Request $request)
-    {
-        return (new ProjectsExport($request))->download('projects.xlsx');
-    }
+
    
 }

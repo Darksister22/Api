@@ -16,7 +16,7 @@ class CreateStudentsTable extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->id();
             $table->string('name_ar');
-            $table->string('name_en');
+            $table->string('name_en')->nullable();
             $table->boolean('isEnded')->default(false);
             $table->decimal('avg1')->nullable();
             $table->decimal('avg2')->nullable();
@@ -25,7 +25,7 @@ class CreateStudentsTable extends Migration
             $table->decimal('avg5')->nullable();
             $table->boolean('isGrad')->default(false);
             $table->enum('level',['bachaelor','master','pHD']);
-            $table->enum('year',['first','second','third','fourth','fifth','sixth','seventh','eigth','ninth','tenth']);
+            $table->enum('year',['first','second','third','fourth','fifth']);
             $table->string('note')->nullable();
             $table->timestamps();
         });
