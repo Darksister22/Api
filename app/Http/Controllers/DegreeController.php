@@ -481,4 +481,5 @@ class DegreeController extends Controller
     {
         return (new YearExport($request))->download("student.xlsx");
     }
+
 }

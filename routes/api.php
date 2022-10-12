@@ -38,6 +38,8 @@ Route::post('/students/remove/{id}', [StudentController::class, 'remove']);
 Route::post('/students/update',[StudentController::class,'update']);
 Route::get('/students/getCurAvg',[StudentController::class,'getCurAvg']);
 
+
+
 Route::get('/instructors', [InstructorController::class, 'showAll']);
 Route::post('/instructors/create', [InstructorController::class, 'create']);
 Route::post('/instructors/destroy/{id}', [InstructorController::class, 'destroy']);
@@ -57,6 +59,7 @@ Route::post('/courses/destroy/{id}', [CourseController::class, 'destroy']);
 
 Route::get('/grads/show', [GradController::class, 'showall']);
 Route::post('/grads/update',[GradController::class,'update']);
+Route::get('grad/export', [GradController::class, 'exportgrad']);
 
 Route::post('/degrees/createhelp', [HelpController::class, 'createhelp']);
 Route::get('/degrees/showhelp', [HelpController::class, 'showhelp']);
