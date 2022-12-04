@@ -33,6 +33,7 @@ class CreateGraduatesTable extends Migration
             $table->enum('year',['first','second','third','fourth','fifth','sixth','seventh','eigth','ninth','tenth']);
             $table->decimal('summer_deg')->nullable();
             $table->string('note')->nullable();
+            $table->boolean('isEnded')->nullable();
             $table->timestamps();
         });
     }

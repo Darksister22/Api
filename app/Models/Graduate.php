@@ -24,6 +24,7 @@ class Graduate extends Model
         'avg8',
         'avg10',
         'note',
-        'summer_deg'
+        'summer_deg',
+        'isEnded',
     ];
 }

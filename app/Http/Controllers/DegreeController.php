@@ -178,7 +178,7 @@ class DegreeController extends Controller
             $semester->save();
 
             //the process is performed for each student.
-            $stu = Student::select('*')->where("level", "=", "$request->level")->where("isEnded", "=", false)->get();
+            $stu = Student::select('*')->where("level", "=", "$request->level")->where('isGrad','=',false)->where("isEnded", "=", false)->get();
             foreach ($stu as $stu) {
 
                 //get average of student for courses only INSIDE their year. (no carries or attends)
@@ -191,15 +191,15 @@ class DegreeController extends Controller
                 $sum = 0;
                 $final = 0;
                 $unit = 0;
-                foreach ($degrees as $degrees) {
-                    $units = Course::select("unit")->where("id", "=", "$degrees->course_id")->first();
+                foreach ($degrees as $degree) {
+                    $units = Course::select("unit")->where("id", "=", "$degree->course_id")->first();
                     $unit = $unit + $units->unit;
-                    if ($degrees->final3 != null) {
-                        $final = $degrees->final3;
-                    } else if ($degrees->final2 != null) {
-                        $final = $degrees->final2;
-                    } else if ($degrees->final1 != null) {
-                        $final = $degrees->final1;
+                    if ($degree->final3 != null) {
+                        $final = $degree->final3;
+                    } else if ($degree->final2 != null) {
+                        $final = $degree->final2;
+                    } else if ($degree->final1 != null) {
+                        $final = $degree->final1;
                     }
                     $final = $final * $units->unit;
                     $sum = $final + $sum;
@@ -299,7 +299,6 @@ class DegreeController extends Controller
         }
 
     }
-
     public function grad($stu, $gradyear)
     {
         if ($stu->year == $gradyear) {
