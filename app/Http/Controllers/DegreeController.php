@@ -23,7 +23,7 @@ class DegreeController extends Controller
             $semester = Semester::select('*')->get()->last();
             $id = $semester->id;
             $q->where('semester_id', '=', $id);
-        })->with("courses")->with("student")->get();
+        })->with("courses")->with("student")->paginate(10);
         return $deg;
     }
     public function getAllDegrees(Request $request)
