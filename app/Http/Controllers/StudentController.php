@@ -23,8 +23,8 @@ class StudentController extends Controller
         $this->middleware('auth:sanctum')
             ->only(['destroy', 'create', 'update']);
     }
-    public function showAll(){
-        $students = Student::select('*')->where('isGrad','=',false)->get();
+    public function showAll($level){
+        $students = Student::select('*')->where("year","=",$level)->where('isGrad','=',false)->paginate(10);
         return $students;
     }
     public function getCurAvg(Request $request){
@@ -77,7 +77,7 @@ class StudentController extends Controller
        foreach ($deg as $d ) {
             Degree::destroy($deg);
        }
-        return response('تم حذف الطالب بنجاح', 200);
+        return response(200);
     }
 
     public function remove($id)
@@ -86,7 +86,7 @@ class StudentController extends Controller
      $student =Student::where('id','=',"$id")->first();
      $student->isEnded = true; 
      $student->save();
-        return response('تم حذف الطالب بنجاح', 200);
+        return response(200);
     }
 
 public function update(Request $request){

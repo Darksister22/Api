@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
-use App\Models\course_instructor;
-use App\Models\Degree;
 use App\Models\Instructor;
 use App\Models\Semester;
 use Illuminate\Http\Request;
@@ -19,8 +17,8 @@ class InstructorController extends Controller
     }
     public function showAll()
     {
-        $instructor = Instructor::select('*')->get();
-        return $instructor;
+        $data = Instructor::select('*')->paginate(10);
+        return $data;
     }
 
     public function create(Request $request)
@@ -31,36 +29,33 @@ class InstructorController extends Controller
         ]);
         Instructor::create([
             'name_ar' => $request->name_ar,
-            'name_en' =>  $request->name_en,
+            'name_en' => $request->name_en,
         ]);
     }
-    public function update(Request $request){
+    public function update(Request $request)
+    {
         $request->validate([
             'id' => 'required',
             'name_ar' => 'required',
             'name_en' => 'required',
         ]);
-        $instructor = Instructor::select('*')->where('id','=',"$request->id")->first();
+        $instructor = Instructor::select('*')->where('id', '=', "$request->id")->first();
         $instructor->name_ar = $request->name_ar;
         $instructor->name_en = $request->name_en;
-        $instructor-> save();
-    
+        $instructor->save();
+
     }
     public function destroy($id)
     {
         $semester = Semester::select('*')->get()->last();
         $id = $semester->id;
-        $inscourse=Course::where("instructor_id","=","$id")->where("semester_id",'=',"$id")->get();
-        if($inscourse==null){
-        Instructor::destroy($id);}
-        else return response(409,"لا يمكن حذف تدريسي لديه مواد حالية");
-        return response('تم حذف التدريسي بنجاح', 200);
+        $inscourse = Course::where("instructor_id", "=", "$id")->where("semester_id", '=', "$id")->get();
+        if ($inscourse == null) {
+            Instructor::destroy($id);
+            return response(200);
+        } else {
+            return response(409);
+        }
     }
+    
 }
-
-
-
-
-
-
-

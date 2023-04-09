@@ -28,7 +28,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/students', [StudentController::class, 'showAll']);
+Route::get('/students/{level}', [StudentController::class, 'showAll']);
 Route::post('/students/grad', [StudentController::class, 'grad']);
 Route::post('/students/attend',[StudentController::class,'attendency']);
 Route::post('/students/create', [StudentController::class, 'create']);
@@ -52,6 +52,7 @@ Route::get('degrees/exstu/', [DegreeController::class, 'exportresult']);
 
 Route::post('/courses/create', [CourseController::class, 'create']);
 Route::get('/courses/level', [CourseController::class, 'showLevel']);
+Route::get('/courses/students/{id}', [CourseController::class, 'showStudents']);
 Route::get('/courses', [CourseController::class, 'showCurrent']);
 Route::get('/courses/all', [CourseController::class, 'showAll']);
 Route::post('/courses/update', [CourseController::class, 'update']);

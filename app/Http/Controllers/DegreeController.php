@@ -352,19 +352,17 @@ class DegreeController extends Controller
     public function setAvg($stu, $avg)
     {
         $year = $stu->year;
-        if ($year == "first") {
-            $stu->avg1 = $avg;
-        } else if ($year == "second") {
-            $stu->avg2 = $avg;
-        } else if ($year == "third") {
-            $stu->avg3 = $avg;
-        } else if ($year == "fourth") {
-            $stu->avg4 = $avg;
-        } else if ($year == "fifth") {
-            $stu->avg5 = $avg;
-        }
+        $avgs = [
+            'first' => 'avg1',
+            'second' => 'avg2',
+            'third' => 'avg3',
+            'fourth' => 'avg4',
+            'fifth' => 'avg5',
+        ];
+        $stu->{$avgs[$year]} = $avg;
         $stu->save();
     }
+    
     public function setAvgYear($stu, $year, $avg)
     {
         if ($year == "first") {

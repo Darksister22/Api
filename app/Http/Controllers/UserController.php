@@ -38,7 +38,7 @@ class UserController extends Controller
         }
         $user->tokens()->delete();
         $token = $user->createToken($request->input('email'))->plainTextToken;
-
+        header('Content-Type: application/json');
         return response()->json([
             'user' => $user,
             'role'=>$user->role,
