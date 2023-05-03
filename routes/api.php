@@ -41,6 +41,7 @@ Route::get('/students/getCurAvg',[StudentController::class,'getCurAvg']);
 
 
 Route::get('/instructors', [InstructorController::class, 'showAll']);
+Route::get('/instructors/select', [InstructorController::class, 'showSelect']);
 Route::post('/instructors/create', [InstructorController::class, 'create']);
 Route::post('/instructors/destroy/{id}', [InstructorController::class, 'destroy']);
 Route::post('/instructors/update', [InstructorController::class, 'update']);
@@ -53,7 +54,7 @@ Route::get('degrees/exstu/', [DegreeController::class, 'exportresult']);
 Route::post('/courses/create', [CourseController::class, 'create']);
 Route::get('/courses/level', [CourseController::class, 'showLevel']);
 Route::get('/courses/students/{id}', [CourseController::class, 'showStudents']);
-Route::get('/courses', [CourseController::class, 'showCurrent']);
+Route::get('/courses/{year}/{number}', [CourseController::class, 'showCurrent']);
 Route::get('/courses/all', [CourseController::class, 'showAll']);
 Route::post('/courses/update', [CourseController::class, 'update']);
 Route::post('/courses/destroy/{id}', [CourseController::class, 'destroy']);
@@ -78,6 +79,7 @@ Route::get('/degrees/getall', [DegreeController::class, 'getAllDegrees']);
 Route::get('/degrees/getyear', [DegreeController::class, 'getYearDegrees']);
 Route::post('/degrees/grad', [DegreeController::class, 'grads']);
 Route::post('/degrees/pass', [DegreeController::class, 'pass']);
+Route::get('/degrees/get/{id}', [DegreeController::class, 'Get']);
 
 
 Route::post('/semesters/end', [SemesterController::class, 'end']);

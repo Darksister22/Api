@@ -34,15 +34,16 @@ class CourseController extends Controller
     //     return $newList;
     // }
 
-    public function showCurrent()
+    public function showCurrent(Request $request,$year,$number)
     {
-        $semester = Semester::where('isEnded', '=', false)->first();
+        $semester = Semester::where('isEnded', '=', false)->where("number","=",$number)->first();
         $id = $semester->id;
-        $coursesQuery = Course::select('*')->where('semester_id', "=", $id);
-        $courses = $coursesQuery->paginate(10);
-
-      
-        return $courses;
+        $query = Course::select('*')->where('semester_id', "=", $id)->where("year","=",$year);
+        if ($request->has('search')) {
+            $query->where('name_en', 'like', '%' . $request->input('search') . '%');
+        }
+        $data = $query->paginate(10);
+        return $data;
     }
     public function showStudents($rid){
         $semester = Semester::where('isEnded', '=', false)->first();
@@ -73,31 +74,25 @@ class CourseController extends Controller
     
 
     }
-    public function showAll(Request $request)
-    {
-        $year = $request->year;
-        $courses = Course::whereHas("semester", function ($q) use ($year) {
-            $q->where("year", "=", "$year");
-        })->with('instructor')->with('studentsCarry')->select('*')->get();
-        $newList = [];
-        foreach ($courses as $course) {
-            $students = Student::select('*')->where('level', '=', $course->level)
-                ->where('year', '=', $course->year)
-                ->get();
-            $course['students'] = $students;
-            array_push($newList, $course);
-        }
-        return $newList;
-    }
-    public function showLevel(Request $request)
-    {
-        $request->validate(['level' => 'required']);
-        $semester = Semester::where('isEnded', '=', false)->first();
-        $id = $semester->id;
-        $courses = Course::select('*')->where('semester_id', "=", $id)->where('level', "=", "$request->level")->get();
+    // public function showAll(Request $request)
+    // {
+    //     $year = $request->year;
+    //     $courses = Course::whereHas("semester", function ($q) use ($year) {
+    //         $q->where("year", "=", "$year");
+    //     })->with('instructor')->with('studentsCarry')->select('*')->get();
+    //     $newList = [];
+    //     foreach ($courses as $course) {
+    //         $students = Student::select('*')->where('level', '=', $course->level)
+    //             ->where('year', '=', $course->year)
+    //             ->get();
+    //         $course['students'] = $students;
+    //         array_push($newList, $course);
+    //     }
+    //     return $newList;
+    // }
 
-        return response($courses, 200);
-    }
+
+    
     public function create(Request $request)
     {
         $request->validate([
