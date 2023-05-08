@@ -434,27 +434,13 @@ class DegreeController extends Controller
     public function createStudentDegrees(Request $request)
     {
         $request->validate([
-            'student_id' => 'required',
-            'course_id' => 'required',
+            'id' => 'required'
         ]);
-        $course = Course::select('*')->where('id', '=', "$request->course_id")->first();
-        $student = Student::select('*')->where('id', '=', "$request->student_id")->first();
+        //$course = Course::select('*')->where('id', '=', "$request->course_id")->first();
+      //  $student = Student::select('*')->where('id', '=', "$request->student_id")->first();
 
-        $results = Degree::where('student_id', "=", "$student->id")->where('course_id', '=', "$course->id")->first();
-
-        //code...
-        if ($results == null) {
-
-            Degree::create([
-                'student_id' => $student->id,
-                'course_id' => $course->id,
-                'fourty' => $request->fourty,
-                'sixty1' => $request->sixty1,
-
-            ]);
-            return response(200);
-        } else if ($results != null) {
-            $deg = Degree::select('*')->where('student_id', "=", "$student->id")->where("course_id", "=", "$course->id")->first();
+      
+            $deg = Degree::select('*')->where('id', "=", $request->id)->first();
             $deg->fourty = $request->fourty;
             $deg->sixty1 = $request->sixty1;
             $deg->sixty2 = $request->sixty2;
@@ -462,7 +448,6 @@ class DegreeController extends Controller
             $deg->save();
             return response(200);
 
-        };
 
     }
 
@@ -508,8 +493,8 @@ class DegreeController extends Controller
                 }
             }
         }
-        
-        $query = Degree::where('course_id', $cid)->with('student:id,name_ar')->get();
+        $this->countDegree(); 
+        $query = Degree::where('course_id', $cid)->with('student:id,name_ar');
         if ($request->has('search')) {
             $query->where('name_ar', 'like', '%' . $request->input('search') . '%');
         }

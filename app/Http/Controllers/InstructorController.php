@@ -27,7 +27,7 @@ class InstructorController extends Controller
     
     public function showSelect()
     {
-        $data = Instructor::select('*')->get();
+        $data = Instructor::select('name_ar')->get();
         return $data;
     }
     public function create(Request $request)
