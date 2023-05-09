@@ -54,7 +54,7 @@ Route::get('degrees/exstu/', [DegreeController::class, 'exportresult']);
 Route::post('/courses/create', [CourseController::class, 'create']);
 Route::get('/courses/level', [CourseController::class, 'showLevel']);
 Route::get('/courses/students/{id}', [CourseController::class, 'showStudents']);
-Route::get('/courses/{year}/{number}', [CourseController::class, 'showCurrent']);
+Route::get('/courses/{year}/{number}/{semester}', [CourseController::class, 'showCurrent']);
 Route::get('/courses/all', [CourseController::class, 'showAll']);
 Route::post('/courses/update', [CourseController::class, 'update']);
 Route::post('/courses/destroy/{id}', [CourseController::class, 'destroy']);

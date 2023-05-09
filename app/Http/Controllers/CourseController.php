@@ -34,9 +34,9 @@ class CourseController extends Controller
     //     return $newList;
     // }
 
-    public function showCurrent(Request $request,$year,$number)
+    public function showCurrent(Request $request,$year,$number,$semester)
     {
-        $semester = Semester::where('isEnded', '=', false)->where("number","=",$number)->first();
+        $semester = Semester::where('isEnded', '=', false)->where("number","=",$number)->where('year','=',$semester)->first();
         $id = $semester->id;
         $query = Course::select('*')->where('semester_id', "=", $id)->where("year","=",$year);
         if ($request->has('search')) {
@@ -102,6 +102,7 @@ class CourseController extends Controller
             'code' => 'required',
             'unit' => 'required',
             'year' => 'required',
+            'semester' =>'required',
             'ins_name' => 'required',
             'success' => 'required',
         ]);
@@ -109,7 +110,7 @@ class CourseController extends Controller
         if ($course !== null && $course->name_en != $request->name_en) {
             return response('المادة موجودة مسبقاً', 409);
         }
-        $semester = Semester::where('isEnded', '=', false)->first();
+        $semester = Semester::where('isEnded', '=', false)->where('number','=',$request->semester)->first();
         $instructor = Instructor::where('name_ar', '=', "$request->ins_name")->first();
         if ($instructor == null) {
             return response("لا يوجد تدريسي بهذا الاسم, الرجاء التأكد", 409);
