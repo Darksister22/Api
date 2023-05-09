@@ -36,7 +36,7 @@ class CourseController extends Controller
 
     public function showCurrent(Request $request,$year,$number,$semester)
     {
-        $semester = Semester::where('isEnded', '=', false)->where("number","=",$number)->where('year','=',$semester)->first();
+        $semester = Semester::where("number","=",$number)->where('year','=',$semester)->first();
         $id = $semester->id;
         $query = Course::select('*')->where('semester_id', "=", $id)->where("year","=",$year);
         if ($request->has('search')) {
