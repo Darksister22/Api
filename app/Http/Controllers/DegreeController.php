@@ -102,15 +102,11 @@ class DegreeController extends Controller
         }
     }
 
-    public function countDegree() //calc grades for current semester no matter the number. Used in both yearDeg and DegCur.
+    public function countDegree($id) //calc grades for current semester no matter the number. Used in both yearDeg and DegCur.
 
     {
-        $deg = Degree::whereHas('courses', function ($q) {
-            $semester = Semester::where('isEnded', '=', false)->first();
-            $id = $semester->id;
-            $q->where('semester_id', '=', $id);
-        })->with("courses")->with("student")->get();
-        foreach ($deg as $deg) {
+        $deg = Degree::where('id','=',$id)->first();
+       
             $help = Helps::select('*')->where("degree_id", "=", "$deg->id")->first();
             if ($help == '[]' || $help == null) {
                 $course = Course::select('*')->where('id', '=', "$deg->course_id")->first();
@@ -147,7 +143,7 @@ class DegreeController extends Controller
                         $deg->approx = $this->getApprox($total, $course->success);
                     }}
                 $deg->save();
-            }}
+            }
     }
 
     public function pass(Request $request)
@@ -436,16 +432,17 @@ class DegreeController extends Controller
         $request->validate([
             'id' => 'required'
         ]);
-        //$course = Course::select('*')->where('id', '=', "$request->course_id")->first();
-      //  $student = Student::select('*')->where('id', '=', "$request->student_id")->first();
+       
 
       
             $deg = Degree::select('*')->where('id', "=", $request->id)->first();
+            $id = $deg->id; 
             $deg->fourty = $request->fourty;
             $deg->sixty1 = $request->sixty1;
             $deg->sixty2 = $request->sixty2;
             $deg->sixty3 = $request->sixty3;
             $deg->save();
+            $this->countDegree($id); 
             return response(200);
 
 
@@ -493,7 +490,6 @@ class DegreeController extends Controller
                 }
             }
         }
-        $this->countDegree(); 
         $query = Degree::where('course_id', $cid)->with('student:id,name_ar');
         if ($request->has('search')) {
             $query->where('name_ar', 'like', '%' . $request->input('search') . '%');
