@@ -89,6 +89,7 @@ class SemesterController extends Controller
                     }
                 }
             }
+            return response(200);
         }
     }
     public function show()
@@ -106,6 +107,7 @@ class SemesterController extends Controller
             if ($isEnded == 0) {
                 $semester->isEnded = 1;
                 $semester->save();
+                return response(200); 
             } else {
                 return response(409);
             }
