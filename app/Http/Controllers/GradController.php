@@ -8,8 +8,13 @@ use Illuminate\Http\Request;
 
 class GradController extends Controller
 {
-    public function showall(){
-        return Graduate::select('*')->get();
+    public function showall(Request $request){
+        $query = Graduate::select('*');
+        if ($request->has('search')) {
+            $query->where('name_ar', '=', '%' . $request->input('search') . '%');
+        }
+        $data = $query->paginate(10);
+        return $data;
     }
     public function update(Request $request){
         $request->validate([

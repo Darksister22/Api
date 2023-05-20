@@ -19,7 +19,6 @@ class SemesterController extends Controller
     public function create(Request $request)
     {
         $request->validate([
-            'number' => 'required',
             'year' => 'required',
         ]);
         if (!Gate::allows('is-super')) {
